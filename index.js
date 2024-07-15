@@ -15,7 +15,7 @@ const slackChannel = "#testing";
 const slackToken = process.env.SLACK_BOT_TOKEN;
 
 // In-memory storage for access token (for simplicity)
-let accessTokenStorage = {};
+let accessTokenStorage = "";
 
 // Function to get Zoom Access Token
 async function getZoomAccessToken(code) {
@@ -91,7 +91,7 @@ function extractLinksFromZoomChat(chatFileContent) {
 // Main function to handle the process
 async function main(meetingId, userId) {
   console.log("meetingId:", meetingId, "userId:", userId);
-  const accessToken = accessTokenStorage[userId];
+  const accessToken = accessTokenStorage;
   if (!accessToken) {
     console.error("Access token not found for user:", userId);
     return;
@@ -145,13 +145,13 @@ app.post("/webhook", async (req, res) => {
 // OAuth callback endpoint
 app.get("/oauth/callback", async (req, res) => {
   const code = req.query.code;
-  const userId = req.query.state; // Assuming user ID is passed in state parameter
+  const userId = req.query.client_id; // Assuming user ID is passed in state parameter
   console.log("Req.query: ", req.query);
   console.log("Received OAuth callback:", code, userId);
   try {
     const accessToken = await getZoomAccessToken(code);
     console.log("Access token:", accessToken);
-    accessTokenStorage[userId] = accessToken; // Store the access token for the user
+    accessTokenStorage = accessToken; // Store the access token for the user
     res.send("OAuth flow completed. You can close this window.");
   } catch (error) {
     console.error("Error during OAuth callback:", error);
