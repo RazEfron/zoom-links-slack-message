@@ -146,6 +146,7 @@ app.post("/webhook", async (req, res) => {
 app.get("/oauth/callback", async (req, res) => {
   const code = req.query.code;
   const userId = req.query.state; // Assuming user ID is passed in state parameter
+  console.log("Req.query: ", req.query);
   console.log("Received OAuth callback:", code, userId);
   try {
     const accessToken = await getZoomAccessToken(code);
