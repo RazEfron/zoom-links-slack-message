@@ -1,16 +1,21 @@
 const express = require("express");
 const axios = require("axios");
-const qs = require("querystring");
+const qs = require("qs");
 const bodyParser = require("body-parser");
+const dotenv = require("dotenv").config();
 
 const app = express();
 app.use(bodyParser.json());
 
-const clientId = process.env.CLIENT_ID;
-const clientSecret = process.env.CLIENT_SECRET;
-const redirectUri = "http://localhost:3000/oauth/callback";
-const slackChannel = "#general";
-const slackToken = process.env.SLACK_TOKEN;
+const clientId = process.env.ZOOM_CLIENT_ID;
+const clientSecret = process.env.ZOOM_CLIENT_SECRET;
+const redirectUri =
+  "https://zoom-links-slack-message.onrender.com/oauth/callback"; // Set this to your redirect URI
+const slackChannel = "#testing";
+const slackToken = process.env.SLACK_BOT_TOKEN;
+
+// In-memory storage for access token (for simplicity)
+let accessTokenStorage = {};
 
 // Function to get Zoom Access Token
 async function getZoomAccessToken(code) {
@@ -83,7 +88,13 @@ function extractLinksFromZoomChat(chatFileContent) {
 }
 
 // Main function to handle the process
-async function main(meetingId, accessToken) {
+async function main(meetingId, userId) {
+  const accessToken = accessTokenStorage[userId];
+  if (!accessToken) {
+    console.error("Access token not found for user:", userId);
+    return;
+  }
+
   const chatFileContent = await downloadZoomChatFile(meetingId, accessToken);
 
   if (chatFileContent) {
@@ -116,17 +127,31 @@ app.post("/webhook", async (req, res) => {
   const event = req.body.event;
   if (event === "meeting.ended") {
     const meetingId = req.body.payload.object.id;
-    const authorizationCode = req.body.payload.object.authorization_code;
+    const userId = req.body.payload.object.host_id;
 
     try {
-      const accessToken = await getZoomAccessToken(authorizationCode);
-      await main(meetingId, accessToken);
+      await main(meetingId, userId);
     } catch (error) {
       console.error("Error processing Zoom webhook:", error);
     }
   }
 
   res.status(200).send("OK");
+});
+
+// OAuth callback endpoint
+app.get("/oauth/callback", async (req, res) => {
+  const code = req.query.code;
+  const userId = req.query.state; // Assuming user ID is passed in state parameter
+
+  try {
+    const accessToken = await getZoomAccessToken(code);
+    accessTokenStorage[userId] = accessToken; // Store the access token for the user
+    res.send("OAuth flow completed. You can close this window.");
+  } catch (error) {
+    console.error("Error during OAuth callback:", error);
+    res.status(500).send("OAuth flow failed.");
+  }
 });
 
 // Start the server
