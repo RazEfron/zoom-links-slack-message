@@ -83,12 +83,14 @@ async function sendMessageToSlack(channel, text, token) {
 
 // Function to extract links from Zoom chat content
 function extractLinksFromZoomChat(chatFileContent) {
+  console.log("Chat file content:", chatFileContent);
   const urlPattern = /https?:\/\/\S+/g;
   return chatFileContent.match(urlPattern);
 }
 
 // Main function to handle the process
 async function main(meetingId, userId) {
+  console.log("meetingId:", meetingId, "userId:", userId);
   const accessToken = accessTokenStorage[userId];
   if (!accessToken) {
     console.error("Access token not found for user:", userId);
