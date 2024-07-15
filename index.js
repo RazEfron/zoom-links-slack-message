@@ -126,6 +126,7 @@ async function main(meetingId, userId) {
 
 // Webhook endpoint to handle Zoom meeting ended event
 app.post("/webhook", async (req, res) => {
+  console.log("Received Zoom webhook:", req.body);
   const event = req.body.event;
   if (event === "meeting.ended") {
     const meetingId = req.body.payload.object.id;
@@ -145,9 +146,10 @@ app.post("/webhook", async (req, res) => {
 app.get("/oauth/callback", async (req, res) => {
   const code = req.query.code;
   const userId = req.query.state; // Assuming user ID is passed in state parameter
-
+  console.log("Received OAuth callback:", code, userId);
   try {
     const accessToken = await getZoomAccessToken(code);
+    console.log("Access token:", accessToken);
     accessTokenStorage[userId] = accessToken; // Store the access token for the user
     res.send("OAuth flow completed. You can close this window.");
   } catch (error) {
