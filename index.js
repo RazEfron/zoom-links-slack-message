@@ -9,8 +9,7 @@ app.use(bodyParser.json());
 
 const clientId = process.env.ZOOM_CLIENT_ID;
 const clientSecret = process.env.ZOOM_CLIENT_SECRET;
-const redirectUri =
-  "https://zoom-links-slack-message.onrender.com/oauth/callback"; // Set this to your redirect URI
+const redirectUri = "https://zoom-links-slack-message.onrender.com/oauth/callback"; // Set this to your redirect URI
 const slackChannel = "#testing";
 const slackToken = process.env.SLACK_BOT_TOKEN;
 
@@ -89,7 +88,7 @@ function extractLinksFromZoomChat(chatFileContent) {
 }
 
 // Main function to handle the process
-async function main(meetingId, userId) {
+async function main(meetingId, meetingTopic, meetingDate, userId) {
   console.log("meetingId:", meetingId, "userId:", userId);
   const accessToken = accessTokenStorage;
   if (!accessToken) {
@@ -103,7 +102,7 @@ async function main(meetingId, userId) {
     const links = extractLinksFromZoomChat(chatFileContent);
     if (links && links.length > 0) {
       const messageText =
-        "Here are the links shared during the Zoom meeting:\n" +
+        `Here are the links shared during the Zoom meeting "${meetingTopic}" on ${meetingDate}:\n` +
         links.join("\n");
       const response = await sendMessageToSlack(
         slackChannel,
@@ -131,9 +130,11 @@ app.post("/webhook", async (req, res) => {
   if (event === "recording.completed") {
     const meetingId = req.body.payload.object.id;
     const userId = req.body.payload.object.host_id;
+    const meetingTopic = req.body.payload.object.topic;
+    const meetingDate = req.body.payload.object.start_time;
 
     try {
-      await main(meetingId, userId);
+      await main(meetingId, meetingTopic, meetingDate, userId);
     } catch (error) {
       console.error("Error processing Zoom webhook:", error);
     }
