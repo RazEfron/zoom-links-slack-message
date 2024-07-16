@@ -128,7 +128,7 @@ async function main(meetingId, userId) {
 app.post("/webhook", async (req, res) => {
   console.log("Received Zoom webhook:", req.body);
   const event = req.body.event;
-  if (event === "meeting.ended") {
+  if (event === "recording.completed") {
     const meetingId = req.body.payload.object.id;
     const userId = req.body.payload.object.host_id;
 
