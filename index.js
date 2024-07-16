@@ -98,7 +98,7 @@ async function main(meetingId, userId) {
   }
 
   const chatFileContent = await downloadZoomChatFile(meetingId, accessToken);
-
+  console.log("Chat file content:", chatFileContent);
   if (chatFileContent) {
     const links = extractLinksFromZoomChat(chatFileContent);
     if (links && links.length > 0) {
