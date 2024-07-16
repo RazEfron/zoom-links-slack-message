@@ -25,7 +25,7 @@ async function getZoomAccessToken(code) {
     code: code,
     redirect_uri: redirectUri,
   });
-
+  console.log("getZoomAccessToken:", params);
   const response = await axios.post(url, params, {
     auth: {
       username: clientId,
@@ -35,7 +35,7 @@ async function getZoomAccessToken(code) {
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
-
+  console.log("getZoomAccessToken after command:", response);
   return response.data.access_token;
 }
 
@@ -45,7 +45,7 @@ async function downloadZoomChatFile(meetingId, accessToken) {
   const headers = {
     Authorization: `Bearer ${accessToken}`,
   };
-
+  console.log("downloadZoomChatFile:", headers);
   const response = await axios.get(url, { headers });
   if (response.status === 200) {
     const recordings = response.data.recording_files;
@@ -56,7 +56,7 @@ async function downloadZoomChatFile(meetingId, accessToken) {
         break;
       }
     }
-
+    console.log("Chat file URL:", response);
     if (chatFileUrl) {
       const chatResponse = await axios.get(chatFileUrl, { headers });
       return chatResponse.data;
