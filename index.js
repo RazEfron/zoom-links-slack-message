@@ -9,7 +9,8 @@ app.use(bodyParser.json());
 
 const clientId = process.env.ZOOM_CLIENT_ID;
 const clientSecret = process.env.ZOOM_CLIENT_SECRET;
-const redirectUri = "https://zoom-links-slack-message.onrender.com/oauth/callback"; // Set this to your redirect URI
+const redirectUri =
+  "https://zoom-links-slack-message.onrender.com/oauth/callback"; // Set this to your redirect URI
 const slackChannel = "#testing";
 const slackToken = process.env.SLACK_BOT_TOKEN;
 
@@ -90,6 +91,7 @@ function extractLinksFromZoomChat(chatFileContent) {
 // Main function to handle the process
 async function main(meetingId, meetingTopic, meetingDate, userId) {
   console.log("meetingId:", meetingId, "userId:", userId);
+  console.log("accessTokenStorage:", accessTokenStorage);
   const accessToken = accessTokenStorage;
   if (!accessToken) {
     console.error("Access token not found for user:", userId);
