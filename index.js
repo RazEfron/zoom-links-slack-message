@@ -11,7 +11,7 @@ const clientId = process.env.ZOOM_CLIENT_ID;
 const clientSecret = process.env.ZOOM_CLIENT_SECRET;
 const redirectUri =
   "https://zoom-links-slack-message.onrender.com/oauth/callback"; // Set this to your redirect URI
-const slackChannel = "#testing";
+const slackChannel = "#zoom_meetings_links";
 const slackToken = process.env.SLACK_BOT_TOKEN;
 
 // In-memory storage for access token (for simplicity)
