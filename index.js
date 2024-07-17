@@ -3,6 +3,7 @@ const axios = require("axios");
 const qs = require("qs");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv").config();
+const cronJob = require("./cron");
 
 const app = express();
 app.use(bodyParser.json());
@@ -166,4 +167,5 @@ app.get("/oauth/callback", async (req, res) => {
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+  scheduleCronJob();
 });
