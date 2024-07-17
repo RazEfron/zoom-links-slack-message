@@ -108,7 +108,7 @@ async function main(meetingId, meetingTopic, meetingDate, userId) {
         `Here are the links shared during the Zoom meeting "${meetingTopic}" on ${meetingDate}:\n` +
         links.join("\n");
       if (meeting === "82349762610") {
-        slackChannel = "10-6_resources_and_tech";
+        slackChannel = "#10-6_resources_and_tech";
       }
       const response = await sendMessageToSlack(
         slackChannel,
