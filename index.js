@@ -129,6 +129,10 @@ async function main(meetingId, meetingTopic, meetingDate, userId) {
   }
 }
 
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
 // Webhook endpoint to handle Zoom meeting ended event
 app.post("/webhook", async (req, res) => {
   console.log("Received Zoom webhook:", req.body);
